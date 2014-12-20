@@ -1,7 +1,7 @@
 #include "HelloWorldScene.h"
 #include "SimpleAudioEngine.h"
 
-using namespace cocos2d;
+USING_NS_CC;
 
 CCScene* HelloWorld::scene()
 {
@@ -30,22 +30,16 @@ bool HelloWorld::init()
     {
         return false;
     }
+
+	this->initPhysics();
     
     CocosDenshion::SimpleAudioEngine::sharedEngine()->preloadEffect("pickup.caf");
     CocosDenshion::SimpleAudioEngine::sharedEngine()->preloadEffect("hit.caf");
     CocosDenshion::SimpleAudioEngine::sharedEngine()->preloadEffect("move.caf");
     CocosDenshion::SimpleAudioEngine::sharedEngine()->playBackgroundMusic("TileMap.caf");
     
-    _tileMap = new CCTMXTiledMap();
-    _tileMap->initWithTMXFile("TileMap.tmx");
-    _background = _tileMap->layerNamed("Background");
-    _foreground = _tileMap->layerNamed("Foreground");
-    
-    _meta = _tileMap->layerNamed("Meta");
-    _meta->setVisible(false);
-    
-    this->addChild(_tileMap);
-    
+	CreateBackground();
+
     CCTMXObjectGroup *objectGroup = _tileMap->objectGroupNamed("Objects");
     
     if(objectGroup == NULL){
@@ -58,16 +52,78 @@ bool HelloWorld::init()
     int x = ((CCString)*spawnPoint->valueForKey("x")).intValue();
     int y = ((CCString)*spawnPoint->valueForKey("y")).intValue();
     
-    _player = new CCSprite();
-    _player->initWithFile("Player.png");
-    _player->setPosition(ccp(x,y));
-    
-    this->addChild(_player);
-    this->setViewPointCenter(_player->getPosition());
-    
-    this->setTouchEnabled(true);
+	CreatePlayer(x,y);
+	this->setTouchEnabled(false);
+
+	scheduleUpdate();
     
     return true;
+}
+
+void HelloWorld::update(float dt)
+{
+	_world->Step(dt,10,10);
+
+	CCSprite* SP = (CCSprite*)P_body->GetUserData();
+	SP->setPosition(CCPointMake(P_body->GetPosition().x * PTM_RATIO, P_body->GetPosition().y * PTM_RATIO));
+}
+
+void HelloWorld::CreateBackground()
+{
+    _tileMap = new CCTMXTiledMap();
+    _tileMap->initWithTMXFile("TileMap.tmx");
+    _background = _tileMap->layerNamed("Background");
+    _foreground = _tileMap->layerNamed("Foreground");
+    
+    _meta = _tileMap->layerNamed("Meta");
+    _meta->setVisible(false);
+    
+    this->addChild(_tileMap);
+
+}
+
+void HelloWorld::CreatePlayer(int x, int y)
+{
+	CCSprite* playerSprite = CCSprite::create("Player.png");
+	playerSprite->setPosition(ccp(x,y));
+	this->addChild(playerSprite);
+
+	b2BodyDef bodyDef;
+	bodyDef.type = b2_dynamicBody;
+	bodyDef.userData = playerSprite;
+	bodyDef.position.Set(x/PTM_RATIO,y/PTM_RATIO);
+
+	P_body = _world->CreateBody(&bodyDef);
+
+	b2CircleShape circleShape;
+	circleShape.m_radius = 50/PTM_RATIO;
+
+	b2FixtureDef fixDef;
+	fixDef.shape = &circleShape;
+	fixDef.density = 1.0f;
+	fixDef.friction = 0.5f;
+	fixDef.restitution = 1.0f;
+	P_body->CreateFixture(&fixDef);
+
+	this->setViewPointCenter(playerSprite->getPosition());
+
+}
+
+void HelloWorld::initPhysics()
+{
+	b2Vec2 gravity = b2Vec2(0.0f, -10.0f);
+	_world = new b2World(gravity);
+ 
+	_debugDraw = new GLESDebugDraw( PTM_RATIO );
+	_world->SetDebugDraw(_debugDraw);
+ 
+    uint32 flags = 0;
+    flags += b2Draw::e_shapeBit;
+    //        flags += b2Draw::e_jointBit;
+    //        flags += b2Draw::e_aabbBit;
+    //        flags += b2Draw::e_pairBit;
+    //        flags += b2Draw::e_centerOfMassBit;
+    _debugDraw->SetFlags(flags);
 }
 
 void HelloWorld::setViewPointCenter(CCPoint position)
@@ -166,4 +222,22 @@ CCPoint HelloWorld::tileCoordForPosition(CCPoint position)
     int x = position.x / _tileMap->getTileSize().width;
     int y = ((_tileMap->getMapSize().height * _tileMap->getTileSize().height) - position.y) / _tileMap->getTileSize().height;
     return ccp(x, y);
+}
+
+void HelloWorld::draw()
+{
+	CCLayer::draw();
+	ccGLEnableVertexAttribs( kCCVertexAttribFlag_Position );
+	kmGLPushMatrix();
+	_world->DrawDebugData();
+	kmGLPopMatrix();
+}
+ 
+HelloWorld::~HelloWorld()
+{
+	delete _debugDraw;
+    _debugDraw = NULL;
+ 
+    delete _world;
+    _world = NULL;
 }
