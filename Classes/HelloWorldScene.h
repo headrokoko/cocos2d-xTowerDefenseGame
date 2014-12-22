@@ -18,13 +18,13 @@ public:
     // Method 'init' in cocos2d-x returns bool, instead of 'id' in cocos2d-iphone (an object pointer)
     virtual bool init();
 
-	virtual void CreateBackground();
-	virtual void CreatePlayer(int x,int y);
-	virtual void draw();
+	virtual void CreateBackground(); //背景作成メソッド
+	virtual void CreatePlayer(int x,int y);	//プレイヤー作成メソッド
+	virtual void draw();	//debugDraw作成メソッド　
 
 	void initPhysics(); //物理演算初期化
 
-	void update(float dt); 
+	void update(float dt); //updateメソッド
 
     
     // there's no 'id' in cpp, so we recommend to return the class instance pointer
@@ -50,23 +50,23 @@ public:
 
 private:
 
-	b2World* _world;
+	b2World* _world;	//b2World用のフィールド宣言
 
-	b2Body* P_body;
+	b2Body* P_body;		//プレイヤーの物理ボディ
 
-	GLESDebugDraw* _debugDraw;
+	GLESDebugDraw* _debugDraw;	//物理範囲の可視化用
 	
-    CCTMXTiledMap *_tileMap;
+    CCTMXTiledMap *_tileMap;	//TMXデータ格納フィールド
     
-    CCTMXLayer *_background;
+    CCTMXLayer *_background;	//背景レイヤー
     
-    CCSprite *_player;
+    CCSprite *_player;	//プレイヤーのスプライト
     
-    CCTMXLayer *_meta;
+    CCTMXLayer *_meta;	//metaデータのレイヤー
     
-    CCTMXLayer *_foreground;
+    CCTMXLayer *_foreground;	//foregroundレイヤー
     
-    HudLayer *_hud;
+    HudLayer *_hud;		//HUDレイヤー
     
     int _numCollected;
     

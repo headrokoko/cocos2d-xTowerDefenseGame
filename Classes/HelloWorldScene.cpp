@@ -68,6 +68,7 @@ void HelloWorld::update(float dt)
 	SP->setPosition(CCPointMake(P_body->GetPosition().x * PTM_RATIO, P_body->GetPosition().y * PTM_RATIO));
 }
 
+//背景設定メソッド
 void HelloWorld::CreateBackground()
 {
     _tileMap = new CCTMXTiledMap();
@@ -82,41 +83,49 @@ void HelloWorld::CreateBackground()
 
 }
 
+
+//プレイヤー作成
 void HelloWorld::CreatePlayer(int x, int y)
 {
-	CCSprite* playerSprite = CCSprite::create("Player.png");
-	playerSprite->setPosition(ccp(x,y));
-	this->addChild(playerSprite);
+	CCSprite* playerSprite = CCSprite::create("Player.png");	//プレイヤーに当てる画像の設定
+	playerSprite->setPosition(ccp(x,y));	//生成位置の設定
+	this->addChild(playerSprite);	//playerSpriteの生成
 
+	//物理属性の初期化
 	b2BodyDef bodyDef;
-	bodyDef.type = b2_dynamicBody;
-	bodyDef.userData = playerSprite;
-	bodyDef.position.Set(x/PTM_RATIO,y/PTM_RATIO);
+	bodyDef.type = b2_dynamicBody;	//動的に設定
+	bodyDef.userData = playerSprite;	//playerSpriteをuserDateに格納
+	bodyDef.position.Set(x/PTM_RATIO,y/PTM_RATIO);	//bodyDefの生成位置を設定
 
-	P_body = _world->CreateBody(&bodyDef);
+	P_body = _world->CreateBody(&bodyDef);	//bodyDefの設定が入ったP_bodyというb2bodyを生成
 
-	b2CircleShape circleShape;
-	circleShape.m_radius = 50/PTM_RATIO;
+	//形状の初期化
+	b2CircleShape circleShape;	//形状をサークルに設定
+	circleShape.m_radius = 50/PTM_RATIO;	//径を50ピクセル
 
 	b2FixtureDef fixDef;
-	fixDef.shape = &circleShape;
-	fixDef.density = 1.0f;
-	fixDef.friction = 0.5f;
-	fixDef.restitution = 1.0f;
-	P_body->CreateFixture(&fixDef);
+	fixDef.shape = &circleShape;	//形状を入力
+	fixDef.density = 1.0f;	//密度
+	fixDef.friction = 0.5f;	//摩擦率
+	fixDef.restitution = 1.0f;	//反発係数
+	P_body->CreateFixture(&fixDef);	//P_bodyに形状を設定
 
 	this->setViewPointCenter(playerSprite->getPosition());
 
 }
 
+//物理初期化
 void HelloWorld::initPhysics()
 {
-	b2Vec2 gravity = b2Vec2(0.0f, -10.0f);
-	_world = new b2World(gravity);
+	//ワールドの物理設定
+	b2Vec2 gravity = b2Vec2(0.0f, -10.0f);	//＿worldの重力を設定
+	_world = new b2World(gravity);	//_worldにgravityを入力
  
+	//debugDrawの設定
 	_debugDraw = new GLESDebugDraw( PTM_RATIO );
 	_world->SetDebugDraw(_debugDraw);
  
+	//DebudDrawを使用するためCCLayerのdrawクラスをオーバーライドしている
     uint32 flags = 0;
     flags += b2Draw::e_shapeBit;
     //        flags += b2Draw::e_jointBit;
@@ -233,6 +242,7 @@ void HelloWorld::draw()
 	kmGLPopMatrix();
 }
  
+//newでメモリを確保した_worldと_debugDrawはautoreleaseされないためデストラクタにて解放
 HelloWorld::~HelloWorld()
 {
 	delete _debugDraw;
