@@ -51,11 +51,16 @@ bool HelloWorld::init()
     
     int x = ((CCString)*spawnPoint->valueForKey("x")).intValue();
     int y = ((CCString)*spawnPoint->valueForKey("y")).intValue();
+
     
 	CreatePlayer(x,y);
 	this->setTouchEnabled(false);
+	CreateObj* createEnemy;
 
-	scheduleUpdate();
+	createEnemy = CreateObj::Create( enemy,ccp(x,y) );
+	batchNode->addChild(createEnemy);
+
+	scheduleUpdate();	//updateメソッドを実行
     
     return true;
 }

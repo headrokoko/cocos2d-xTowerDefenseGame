@@ -4,6 +4,7 @@
 #include "cocos2d.h"
 #include <Box2D\Box2D.h>
 #include "GLES-Render.h"
+#include "CreateOBJ.h"
 #include "HudLayer.h"
 
 USING_NS_CC;
@@ -44,6 +45,10 @@ public:
     void ccTouchEnded(CCTouch *touch, CCEvent *event);
     
     CCPoint tileCoordForPosition(CCPoint position);
+	
+	b2Body* enemyBody;
+	b2Body* TurretBody;
+	b2Body* wallBody;
 
     // preprocessor macro for "static create()" constructor ( node() deprecated )
     CREATE_FUNC(HelloWorld);
@@ -52,6 +57,7 @@ private:
 
 	b2World* _world;	//b2World用のフィールド宣言
 
+	CCSpriteBatchNode* batchNode;
 	b2Body* P_body;		//プレイヤーの物理ボディ
 
 	GLESDebugDraw* _debugDraw;	//物理範囲の可視化用
