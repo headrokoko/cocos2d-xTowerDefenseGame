@@ -40,6 +40,8 @@ bool HelloWorld::init()
     CocosDenshion::SimpleAudioEngine::sharedEngine()->preloadEffect("move.caf");
     CocosDenshion::SimpleAudioEngine::sharedEngine()->playBackgroundMusic("TileMap.caf");
     
+	ESpriteBatchNode = CCSpriteBatchNode::create("Player.png");
+
 	CreateBackground();	//背景生成メソッドへ
 
     CCTMXObjectGroup *objectGroup = _tileMap->objectGroupNamed("Objects");
@@ -55,12 +57,12 @@ bool HelloWorld::init()
     int y = ((CCString)*spawnPoint->valueForKey("y")).intValue();
 
     
-	//CreatePlayer(x,y);
+	//CreatePlayer(ccp(x,y));
 	CreateEnemy(ccp(x,y));
 
 	this->setTouchEnabled(true);
 
-	CreateObj().Create(this, _world, enemy, ccp(x,y) );	//オブジェクト生成クラスへenemy生成命令
+	//CreateObj().Create(this, _world, enemy, ccp(x,y) );	//オブジェクト生成クラスへenemy生成命令
 
 	scheduleUpdate();	//updateメソッドを実行
     
@@ -109,14 +111,14 @@ void HelloWorld::CreateEnemy(CCPoint point)
 
 	b2BodyDef ebodyDef;
 	ebodyDef.type = b2_dynamicBody;
-	ebodyDef.position.Set(point.x, point.y);
+	ebodyDef.position.Set(point.x / PTM_RATIO, point.y / PTM_RATIO);
 
 	ebodyDef.userData = ESprite;
 
 	b2Body* E_body = _world->CreateBody(&ebodyDef);
 
 	b2CircleShape enemyShape;
-	enemyShape.m_radius = ESprite->getContentSize().width * 0.3 / PTM_RATIO;
+	enemyShape.m_radius = 50 / PTM_RATIO;
 
 	b2FixtureDef enemyFixDef;
 	enemyFixDef.shape = &enemyShape;
@@ -126,21 +128,23 @@ void HelloWorld::CreateEnemy(CCPoint point)
 	E_body->CreateFixture(&enemyFixDef);
 	ESprite->setPhysiBody(E_body);
 
+	this->setViewPointCenter(ESprite->getPosition());
+
 }
 
 //プレイヤー作成
-void HelloWorld::CreatePlayer(int x, int y)
+void HelloWorld::CreatePlayer(CCPoint point)
 {
 
 	CCSprite* playerSprite = CCSprite::create("Player.png");	//プレイヤーに当てる画像の設定
-	playerSprite->setPosition(ccp(x,y));	//生成位置の設定
+	playerSprite->setPosition(point);	//生成位置の設定
 	this->addChild(playerSprite);	//playerSpriteの生成
 
 	//物理属性の初期化
 	b2BodyDef bodyDef;
 	bodyDef.type = b2_dynamicBody;	//動的に設定
 	bodyDef.userData = playerSprite;	//playerSpriteをuserDateに格納
-	bodyDef.position.Set(x/PTM_RATIO,y/PTM_RATIO);	//bodyDefの生成位置を設定
+	bodyDef.position.Set(point.x/PTM_RATIO, point.y/PTM_RATIO);	//bodyDefの生成位置を設定
 
 	P_body = _world->CreateBody(&bodyDef);	//bodyDefの設定が入ったP_bodyというb2bodyを生成
 
@@ -208,7 +212,9 @@ bool HelloWorld::ccTouchBegan(CCTouch *touch, CCEvent *event)
 	CCDirector* pDirector = CCDirector::sharedDirector();
 	CCPoint touchPoint = pDirector->convertToGL(touch->getLocationInView());
 
-	CreatePlayer(touchPoint.x, touchPoint.y);
+	//CreatePlayer(touchPoint);
+
+	CreateEnemy(touchPoint);
 
     return true;
 }

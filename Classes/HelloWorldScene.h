@@ -20,8 +20,8 @@ public:
     virtual bool init();
 
 	virtual void CreateBackground(); //背景作成メソッド
-	virtual void CreatePlayer(int x,int y);	//プレイヤー作成メソッド
-	virtual void CreateEnemy(CCPoint point);
+	virtual void CreatePlayer(CCPoint point);	//プレイヤー作成メソッド
+	virtual void CreateEnemy(CCPoint point);	//Enemy作成メソッド
 	virtual void draw();	//debugDraw作成メソッド　
 
 	void initPhysics(); //物理演算初期化
@@ -46,6 +46,8 @@ public:
     void ccTouchEnded(CCTouch *touch, CCEvent *event);
     
 	b2World* _world;	//b2World用のフィールド宣言
+
+	CCSpriteBatchNode* ESpriteBatchNode;
 
     CCPoint tileCoordForPosition(CCPoint position);
 	
