@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="20" height="35" tilewidth="32" tileheight="32">
+ <tileset firstgid="1" name="meta_tiles" tilewidth="32" tileheight="32" spacing="1">
+  <image source="meta_tiles.png" trans="000000" width="67" height="34"/>
+ </tileset>
+ <tileset firstgid="3" name="GrassA" tilewidth="32" tileheight="32" spacing="1">
+  <image source="GrassA.jpg" trans="000000" width="640" height="480"/>
+ </tileset>
+ <layer name="Background" width="20" height="35">
+  <data encoding="base64" compression="zlib">
+   eJztw8EJAAAMA6F7Zf+Ru0dRcNVUVfXpA+m3EGk=
+  </data>
+ </layer>
+ <objectgroup name="obj"/>
+ <layer name="SpwanPoint" width="20" height="35">
+  <data encoding="base64" compression="zlib">
+   eJztwzENAAAMA6DWv+l62LUDEhIAALjr8wMXwAAp
+  </data>
+ </layer>
+ <layer name="DefenceLine" width="20" height="35">
+  <data encoding="base64" compression="zlib">
+   eJztw6ENAAAIA7CF/4/GTyERbdIE7uZ5AIC2rq4AUQ==
+  </data>
+ </layer>
+</map>

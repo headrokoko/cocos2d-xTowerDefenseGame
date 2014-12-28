@@ -58,7 +58,7 @@ bool HelloWorld::init()
 
     
 	//CreatePlayer(ccp(x,y));
-	CreateEnemy(ccp(x,y));
+	//CreateBomb(ccp(x,y));
 
 	this->setTouchEnabled(true);
 
@@ -89,46 +89,46 @@ void HelloWorld::update(float dt)
 void HelloWorld::CreateBackground()
 {
     _tileMap = new CCTMXTiledMap();
-    _tileMap->initWithTMXFile("TileMap.tmx");
-    _background = _tileMap->layerNamed("Background");
-    _foreground = _tileMap->layerNamed("Foreground");
+    _tileMap->initWithTMXFile("sample.tmx");
+    //_background = _tileMap->layerNamed("Background");
+    //_foreground = _tileMap->layerNamed("Foreground");
     
-    _meta = _tileMap->layerNamed("Meta");
-    _meta->setVisible(false);
+    //_meta = _tileMap->layerNamed("Meta");
+    //_meta->setVisible(false);
     
     //this->addChild(_tileMap);
 
 }
 
 //Enemy作成
-void HelloWorld::CreateEnemy(CCPoint point)
+void HelloWorld::CreateBomb(CCPoint point)
 {
-	PhysiSprite* ESprite = new PhysiSprite();
-	ESprite->autorelease();
-	ESprite->initWithFile("Player.png");
-	ESprite->setPosition(point);
-	this->addChild(ESprite);
+	PhysiSprite* BombSprite = new PhysiSprite();
+	BombSprite->autorelease();
+	BombSprite->initWithFile("Bomb.png");
+	BombSprite->setPosition(point);
+	this->addChild(BombSprite);
 
-	b2BodyDef ebodyDef;
-	ebodyDef.type = b2_dynamicBody;
-	ebodyDef.position.Set(point.x / PTM_RATIO, point.y / PTM_RATIO);
+	b2BodyDef BombBodyDef;
+	BombBodyDef.type = b2_dynamicBody;
+	BombBodyDef.position.Set(point.x / PTM_RATIO, point.y / PTM_RATIO);
 
-	ebodyDef.userData = ESprite;
+	BombBodyDef.userData = BombSprite;
 
-	b2Body* E_body = _world->CreateBody(&ebodyDef);
+	b2Body* Bomb_body = _world->CreateBody(&BombBodyDef);
 
-	b2CircleShape enemyShape;
-	enemyShape.m_radius = 50 / PTM_RATIO;
+	b2CircleShape BombShape;
+	BombShape.m_radius = BombSprite->getContentSize().width * 0.5 / PTM_RATIO;
 
-	b2FixtureDef enemyFixDef;
-	enemyFixDef.shape = &enemyShape;
-	enemyFixDef.density = 1.0f;
-	enemyFixDef.friction = 0.9;
+	b2FixtureDef BombFixDef;
+	BombFixDef.shape = &BombShape;
+	BombFixDef.density = 1.0f;
+	BombFixDef.friction = 0.9;
 
-	E_body->CreateFixture(&enemyFixDef);
-	ESprite->setPhysiBody(E_body);
+	Bomb_body->CreateFixture(&BombFixDef);
+	BombSprite->setPhysiBody(Bomb_body);
 
-	this->setViewPointCenter(ESprite->getPosition());
+	//this->setViewPointCenter(BombSprite->getPosition());
 
 }
 
@@ -169,6 +169,34 @@ void HelloWorld::initPhysics()
 	//ワールドの物理設定
 	b2Vec2 gravity = b2Vec2(0.0f, -10.0f);	//＿worldの重力を設定
 	_world = new b2World(gravity);	//_worldにgravityを入力
+
+	//ゲーム画面端の設定
+	CCSize ScreenSize = CCDirector::sharedDirector()->getWinSize();
+	b2BodyDef worldBodyDef;
+	worldBodyDef.position.Set(0,0);
+
+	b2Body* worldBody = _world->CreateBody(&worldBodyDef);
+
+	b2EdgeShape worldBox;
+
+	//下限
+	worldBox.Set(b2Vec2(ScreenSize.width * 0.05f / PTM_RATIO, ScreenSize.height * 0.05f / PTM_RATIO),
+		b2Vec2(ScreenSize.width * 0.95f /PTM_RATIO, ScreenSize.height * 0.05f / PTM_RATIO));
+
+	worldBody->CreateFixture(&worldBox,0);
+
+	//左限
+	worldBox.Set(b2Vec2(ScreenSize.width * 0.05f / PTM_RATIO, ScreenSize.height * 0.05f / PTM_RATIO),
+		b2Vec2(ScreenSize.width * 0.05f /PTM_RATIO, ScreenSize.height * 0.95f / PTM_RATIO));
+
+	worldBody->CreateFixture(&worldBox,0);
+	
+	//右限
+	worldBox.Set(b2Vec2(ScreenSize.width * 0.95f / PTM_RATIO, ScreenSize.height * 0.05f / PTM_RATIO),
+		b2Vec2(ScreenSize.width * 0.95f /PTM_RATIO, ScreenSize.height * 0.95f / PTM_RATIO));
+
+	worldBody->CreateFixture(&worldBox,0);
+	
  
 	//debugDrawの設定
 	_debugDraw = new GLESDebugDraw( PTM_RATIO );
@@ -214,7 +242,7 @@ bool HelloWorld::ccTouchBegan(CCTouch *touch, CCEvent *event)
 
 	//CreatePlayer(touchPoint);
 
-	CreateEnemy(touchPoint);
+	CreateBomb(touchPoint);
 
     return true;
 }

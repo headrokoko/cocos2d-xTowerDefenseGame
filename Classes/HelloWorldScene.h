@@ -21,7 +21,8 @@ public:
 
 	virtual void CreateBackground(); //背景作成メソッド
 	virtual void CreatePlayer(CCPoint point);	//プレイヤー作成メソッド
-	virtual void CreateEnemy(CCPoint point);	//Enemy作成メソッド
+	//virtual void CreateEnemy(CCPoint point);	//Enemy作成メソッド
+	virtual void CreateBomb(CCPoint point);		//爆弾作成メソッド
 	virtual void draw();	//debugDraw作成メソッド　
 
 	void initPhysics(); //物理演算初期化
