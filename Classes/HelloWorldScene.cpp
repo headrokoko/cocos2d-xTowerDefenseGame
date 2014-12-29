@@ -50,20 +50,13 @@ bool HelloWorld::init()
         CCLog("tile map has no objects object layer");
         return false;
     }
-    
-    CCDictionary* spawnPoint = objectGroup->objectNamed("SpawnPoint");
-    
-    int x = ((CCString)*spawnPoint->valueForKey("x")).intValue();
-    int y = ((CCString)*spawnPoint->valueForKey("y")).intValue();
-
-	spawnpoint = ccp(x,y);
 	//CreatePlayer(ccp(x,y));
 	//CreateBomb(spawnpoint);
 
 	this->setTouchEnabled(true);
+	this->schedule(schedule_selector(HelloWorld::EnemySpwan), 1.5f); 
 
 	scheduleUpdate();	//updateメソッドを実行
-	//this->schedule(schedule_selector(HelloWorld::EnemySpwan),1);
     
     return true;
 }
@@ -71,12 +64,11 @@ bool HelloWorld::init()
 void HelloWorld::update(float dt)
 {
 	_world->Step(dt,10,10);
-
 }
 
-void HelloWorld::EnemySpwan()
+void HelloWorld::EnemySpwan(float dt)
 {
-	CCLog("test");
+	CreateEnemy();
 }
 
 //背景設定メソッド
@@ -127,7 +119,7 @@ void HelloWorld::CreateBomb(CCPoint point)
 }
 
 //Enemy作成
-void HelloWorld::CreateEnemy(CCPoint point)
+void HelloWorld::CreateEnemy()
 {
 	PhysiSprite* Enemyprite = new PhysiSprite();
 	Enemyprite->autorelease();
@@ -136,7 +128,6 @@ void HelloWorld::CreateEnemy(CCPoint point)
 	
 	float posX = (float)(rand()%(95-10+1)+10) / 100 ;
 
-	Enemyprite->setPosition(point);
 	this->addChild(Enemyprite);
 
 	b2BodyDef EnemyBodyDef;
@@ -275,7 +266,7 @@ bool HelloWorld::ccTouchBegan(CCTouch *touch, CCEvent *event)
 	//CreatePlayer(touchPoint);
 
 	CreateBomb(touchPoint);
-	CreateEnemy(touchPoint);
+	CreateEnemy();
 
 
     return true;

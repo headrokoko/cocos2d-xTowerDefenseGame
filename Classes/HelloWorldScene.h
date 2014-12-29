@@ -15,10 +15,9 @@ class HelloWorld : public cocos2d::CCLayer
 
 protected:
 	
-	void EnemySpwan();
 
 public:
-
+	
 	~HelloWorld();
 
     // Method 'init' in cocos2d-x returns bool, instead of 'id' in cocos2d-iphone (an object pointer)
@@ -26,7 +25,8 @@ public:
 
 	virtual void CreateBackground(); //背景作成メソッド
 	virtual void CreatePlayer(CCPoint point);	//プレイヤー作成メソッド
-	virtual void CreateEnemy(CCPoint point);	//Enemy作成メソッド
+	void CreateEnemy();	//Enemy作成メソッド
+	void EnemySpwan(float dt);
 	virtual void CreateBomb(CCPoint point);		//爆弾作成メソッド
 	virtual void draw();	//debugDraw作成メソッド　
 
