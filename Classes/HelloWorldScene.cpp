@@ -51,20 +51,19 @@ bool HelloWorld::init()
         return false;
     }
     
-    CCDictionary *spawnPoint = objectGroup->objectNamed("SpawnPoint");
+    CCDictionary* spawnPoint = objectGroup->objectNamed("SpawnPoint");
     
     int x = ((CCString)*spawnPoint->valueForKey("x")).intValue();
     int y = ((CCString)*spawnPoint->valueForKey("y")).intValue();
 
-    
+	spawnpoint = ccp(x,y);
 	//CreatePlayer(ccp(x,y));
-	//CreateBomb(ccp(x,y));
+	//CreateBomb(spawnpoint);
 
 	this->setTouchEnabled(true);
 
-	//CreateObj().Create(this, _world, enemy, ccp(x,y) );	//オブジェクト生成クラスへenemy生成命令
-
 	scheduleUpdate();	//updateメソッドを実行
+	//this->schedule(schedule_selector(HelloWorld::EnemySpwan),1);
     
     return true;
 }
@@ -73,16 +72,11 @@ void HelloWorld::update(float dt)
 {
 	_world->Step(dt,10,10);
 
-	//for(b2Body* subbody = _world->GetBodyList(); subbody; subbody = subbody->GetNext())
-	{
-		//if(subbody->GetUserData() != NULL)
-		{
-			//CCSprite* SP = (CCSprite*)subbody->GetUserData();	//P_bodyに格納されたuserdate(Sprite)の取り出し
+}
 
-			//SP->setPosition(CCPointMake(P_body->GetPosition().x * PTM_RATIO, P_body->GetPosition().y * PTM_RATIO));	//P_bodyに割り当てられた画像の位置をP_bodyの位置に設定
-
-		}
-	}
+void HelloWorld::EnemySpwan()
+{
+	CCLog("test");
 }
 
 //背景設定メソッド
@@ -100,7 +94,7 @@ void HelloWorld::CreateBackground()
 
 }
 
-//Enemy作成
+//Bomb作成
 void HelloWorld::CreateBomb(CCPoint point)
 {
 	PhysiSprite* BombSprite = new PhysiSprite();
@@ -127,6 +121,43 @@ void HelloWorld::CreateBomb(CCPoint point)
 
 	Bomb_body->CreateFixture(&BombFixDef);
 	BombSprite->setPhysiBody(Bomb_body);
+
+	//this->setViewPointCenter(BombSprite->getPosition());
+
+}
+
+//Enemy作成
+void HelloWorld::CreateEnemy(CCPoint point)
+{
+	PhysiSprite* Enemyprite = new PhysiSprite();
+	Enemyprite->autorelease();
+	Enemyprite->initWithFile("Player.png");
+
+	
+	float posX = (float)(rand()%(95-10+1)+10) / 100 ;
+
+	Enemyprite->setPosition(point);
+	this->addChild(Enemyprite);
+
+	b2BodyDef EnemyBodyDef;
+	EnemyBodyDef.type = b2_dynamicBody;
+	EnemyBodyDef.linearVelocity = b2Vec2(0.0f, 15.0f);
+	EnemyBodyDef.position.Set(ScreenSize.width * posX / PTM_RATIO, ScreenSize.height * 0.1f / PTM_RATIO);
+
+	EnemyBodyDef.userData = Enemyprite;
+
+	b2Body* Enemy_body = _world->CreateBody(&EnemyBodyDef);
+
+	b2CircleShape EnemyShape;
+	EnemyShape.m_radius = Enemyprite->getContentSize().width * 0.5 / PTM_RATIO;
+
+	b2FixtureDef BombFixDef;
+	BombFixDef.shape = &EnemyShape;
+	BombFixDef.density = 1.0f;
+	BombFixDef.friction = 0.9;
+
+	Enemy_body->CreateFixture(&BombFixDef);
+	Enemyprite->setPhysiBody(Enemy_body);
 
 	//this->setViewPointCenter(BombSprite->getPosition());
 
@@ -171,7 +202,7 @@ void HelloWorld::initPhysics()
 	_world = new b2World(gravity);	//_worldにgravityを入力
 
 	//ゲーム画面端の設定
-	CCSize ScreenSize = CCDirector::sharedDirector()->getWinSize();
+	ScreenSize = CCDirector::sharedDirector()->getWinSize();
 	b2BodyDef worldBodyDef;
 	worldBodyDef.position.Set(0,0);
 
@@ -235,6 +266,7 @@ void HelloWorld::registerWithTouchDispatcher()
     CCDirector::sharedDirector()->getTouchDispatcher()->addTargetedDelegate(this, 0, true);
 }
 
+//クリック押下イベント
 bool HelloWorld::ccTouchBegan(CCTouch *touch, CCEvent *event)
 {
 	CCDirector* pDirector = CCDirector::sharedDirector();
@@ -243,6 +275,8 @@ bool HelloWorld::ccTouchBegan(CCTouch *touch, CCEvent *event)
 	//CreatePlayer(touchPoint);
 
 	CreateBomb(touchPoint);
+	CreateEnemy(touchPoint);
+
 
     return true;
 }

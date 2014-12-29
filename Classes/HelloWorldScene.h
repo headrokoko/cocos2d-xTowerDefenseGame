@@ -12,6 +12,11 @@ USING_NS_CC;
 
 class HelloWorld : public cocos2d::CCLayer
 {
+
+protected:
+	
+	void EnemySpwan();
+
 public:
 
 	~HelloWorld();
@@ -21,9 +26,10 @@ public:
 
 	virtual void CreateBackground(); //背景作成メソッド
 	virtual void CreatePlayer(CCPoint point);	//プレイヤー作成メソッド
-	//virtual void CreateEnemy(CCPoint point);	//Enemy作成メソッド
+	virtual void CreateEnemy(CCPoint point);	//Enemy作成メソッド
 	virtual void CreateBomb(CCPoint point);		//爆弾作成メソッド
 	virtual void draw();	//debugDraw作成メソッド　
+
 
 	void initPhysics(); //物理演算初期化
 
@@ -47,6 +53,7 @@ public:
     void ccTouchEnded(CCTouch *touch, CCEvent *event);
     
 	b2World* _world;	//b2World用のフィールド宣言
+	CCSize ScreenSize;
 
 	CCSpriteBatchNode* ESpriteBatchNode;
 
@@ -61,7 +68,7 @@ public:
 
 private:
 
-
+	CCPoint spawnpoint;
 	CCSpriteBatchNode* batchNode;
 	b2Body* P_body;		//プレイヤーの物理ボディ
 
@@ -80,6 +87,7 @@ private:
     HudLayer *_hud;		//HUDレイヤー
     
     int _numCollected;
+	int count;
     
 
 };
