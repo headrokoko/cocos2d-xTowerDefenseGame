@@ -25,8 +25,7 @@ public:
 
 	virtual void CreateBackground(); //背景作成メソッド
 	virtual void CreatePlayer(CCPoint point);	//プレイヤー作成メソッド
-	void CreateEnemy();	//Enemy作成メソッド
-	void EnemySpwan(float dt);
+	void CreateEnemy(float dt);	//Enemy作成メソッド
 	virtual void CreateBomb(CCPoint point);		//爆弾作成メソッド
 	virtual void draw();	//debugDraw作成メソッド　
 
@@ -58,7 +57,7 @@ public:
 	CCSpriteBatchNode* ESpriteBatchNode;
 
     CCPoint tileCoordForPosition(CCPoint position);
-	
+	b2Vec2 gravity;
 	b2Body* enemyBody;
 	b2Body* TurretBody;
 	b2Body* wallBody;

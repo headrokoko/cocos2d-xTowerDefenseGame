@@ -54,7 +54,7 @@ bool HelloWorld::init()
 	//CreateBomb(spawnpoint);
 
 	this->setTouchEnabled(true);
-	this->schedule(schedule_selector(HelloWorld::EnemySpwan), 1.5f); 
+	this->schedule(schedule_selector(HelloWorld::CreateEnemy), 1.5f); 
 
 	scheduleUpdate();	//updateメソッドを実行
     
@@ -66,10 +66,6 @@ void HelloWorld::update(float dt)
 	_world->Step(dt,10,10);
 }
 
-void HelloWorld::EnemySpwan(float dt)
-{
-	CreateEnemy();
-}
 
 //背景設定メソッド
 void HelloWorld::CreateBackground()
@@ -119,7 +115,7 @@ void HelloWorld::CreateBomb(CCPoint point)
 }
 
 //Enemy作成
-void HelloWorld::CreateEnemy()
+void HelloWorld::CreateEnemy(float dt)
 {
 	PhysiSprite* Enemyprite = new PhysiSprite();
 	Enemyprite->autorelease();
@@ -132,12 +128,13 @@ void HelloWorld::CreateEnemy()
 
 	b2BodyDef EnemyBodyDef;
 	EnemyBodyDef.type = b2_dynamicBody;
-	EnemyBodyDef.linearVelocity = b2Vec2(0.0f, 15.0f);
 	EnemyBodyDef.position.Set(ScreenSize.width * posX / PTM_RATIO, ScreenSize.height * 0.1f / PTM_RATIO);
-
 	EnemyBodyDef.userData = Enemyprite;
 
-	b2Body* Enemy_body = _world->CreateBody(&EnemyBodyDef);
+	enemyBody = _world->CreateBody(&EnemyBodyDef);
+
+	enemyBody->SetLinearVelocity(b2Vec2(0.0, 30.0));
+	enemyBody->ApplyForce(b2Vec2(0.0, enemyBody->GetMass() * -gravity.y), enemyBody->GetPosition());
 
 	b2CircleShape EnemyShape;
 	EnemyShape.m_radius = Enemyprite->getContentSize().width * 0.5 / PTM_RATIO;
@@ -147,8 +144,8 @@ void HelloWorld::CreateEnemy()
 	BombFixDef.density = 1.0f;
 	BombFixDef.friction = 0.9;
 
-	Enemy_body->CreateFixture(&BombFixDef);
-	Enemyprite->setPhysiBody(Enemy_body);
+	enemyBody->CreateFixture(&BombFixDef);
+	Enemyprite->setPhysiBody(enemyBody);
 
 	//this->setViewPointCenter(BombSprite->getPosition());
 
@@ -189,7 +186,7 @@ void HelloWorld::CreatePlayer(CCPoint point)
 void HelloWorld::initPhysics()
 {
 	//ワールドの物理設定
-	b2Vec2 gravity = b2Vec2(0.0f, -10.0f);	//＿worldの重力を設定
+	gravity = b2Vec2(0.0f, -10.0f);	//＿worldの重力を設定
 	_world = new b2World(gravity);	//_worldにgravityを入力
 
 	//ゲーム画面端の設定
@@ -266,7 +263,6 @@ bool HelloWorld::ccTouchBegan(CCTouch *touch, CCEvent *event)
 	//CreatePlayer(touchPoint);
 
 	CreateBomb(touchPoint);
-	CreateEnemy();
 
 
     return true;
