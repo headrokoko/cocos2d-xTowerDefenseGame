@@ -8,9 +8,10 @@
 #include "HudLayer.h"
 
 USING_NS_CC;
+
 #define PTM_RATIO 32.0
 
-class HelloWorld : public cocos2d::CCLayer
+class HelloWorld : public cocos2d::CCLayer, public b2ContactListener
 {
 
 protected:
@@ -27,6 +28,7 @@ public:
 	virtual void CreatePlayer(CCPoint point);	//プレイヤー作成メソッド
 	void CreateEnemy(float dt);	//Enemy作成メソッド
 	virtual void CreateBomb(CCPoint point);		//爆弾作成メソッド
+	virtual void BeginContact(b2Contact* contact);	//衝突判定メソッド	
 	virtual void draw();	//debugDraw作成メソッド　
 
 
@@ -50,9 +52,12 @@ public:
     bool ccTouchBegan(CCTouch *touch, CCEvent *event);
     
     void ccTouchEnded(CCTouch *touch, CCEvent *event);
+
+	void DestroyObject(CCNode* Dobject, void* body);
     
 	b2World* _world;	//b2World用のフィールド宣言
 	CCSize ScreenSize;
+	b2ContactListener* _contactListener;
 
 	CCSpriteBatchNode* ESpriteBatchNode;
 

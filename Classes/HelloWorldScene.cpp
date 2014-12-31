@@ -95,10 +95,10 @@ void HelloWorld::CreateBomb(CCPoint point)
 	BombBodyDef.type = b2_dynamicBody;
 	BombBodyDef.position.Set(point.x / PTM_RATIO, point.y / PTM_RATIO);
 
-	BombBodyDef.userData = BombSprite;
+	BombBodyDef.userData = (void*)TAG_BOMB;
 
 	b2Body* Bomb_body = _world->CreateBody(&BombBodyDef);
-
+	Bomb_body->SetLinearVelocity(b2Vec2(0.0, -10.0));
 	b2CircleShape BombShape;
 	BombShape.m_radius = BombSprite->getContentSize().width * 0.5 / PTM_RATIO;
 
@@ -129,12 +129,12 @@ void HelloWorld::CreateEnemy(float dt)
 	b2BodyDef EnemyBodyDef;
 	EnemyBodyDef.type = b2_dynamicBody;
 	EnemyBodyDef.position.Set(ScreenSize.width * posX / PTM_RATIO, ScreenSize.height * 0.1f / PTM_RATIO);
-	EnemyBodyDef.userData = Enemyprite;
+	EnemyBodyDef.userData = (void*)TAG_ENEMY;
 
 	enemyBody = _world->CreateBody(&EnemyBodyDef);
 
-	enemyBody->SetLinearVelocity(b2Vec2(0.0, 30.0));
-	enemyBody->ApplyForce(b2Vec2(0.0, enemyBody->GetMass() * -gravity.y), enemyBody->GetPosition());
+	enemyBody->SetLinearVelocity(b2Vec2(0.0, 10.0));
+	//enemyBody->ApplyForce(b2Vec2(0.0, enemyBody->GetMass() * -gravity.y), enemyBody->GetPosition());
 
 	b2CircleShape EnemyShape;
 	EnemyShape.m_radius = Enemyprite->getContentSize().width * 0.5 / PTM_RATIO;
@@ -182,11 +182,34 @@ void HelloWorld::CreatePlayer(CCPoint point)
 
 }
 
+//接触時のメソッド
+void HelloWorld::BeginContact(b2Contact* contact)
+{
+	//接触したオブジェクトのuserdataを取得
+	PhysiSprite* SpriteA = (PhysiSprite*)contact->GetFixtureA()->GetUserData();
+	PhysiSprite* SpriteB = (PhysiSprite*)contact->GetFixtureB()->GetUserData();
+
+	//接触したオブジェクトのbodyを取得
+	b2Body* BodyA = contact->GetFixtureA()->GetBody();
+	b2Body* BodyB = contact->GetFixtureB()->GetBody();
+
+	//A側の非表示処理
+	//SpriteA->setVisible(false);
+	SpriteA->removeFromParentAndCleanup(true);
+	_world->DestroyBody(BodyA);
+
+	
+	//B側の非表示処理
+	//SpriteB->setVisible(false);
+	SpriteB->removeFromParentAndCleanup(true);
+	_world->DestroyBody(BodyB);
+}
+
 //物理初期化
 void HelloWorld::initPhysics()
 {
 	//ワールドの物理設定
-	gravity = b2Vec2(0.0f, -10.0f);	//＿worldの重力を設定
+	gravity = b2Vec2(0.0f, 0.0f);	//＿worldの重力を設定
 	_world = new b2World(gravity);	//_worldにgravityを入力
 
 	//ゲーム画面端の設定
@@ -216,6 +239,8 @@ void HelloWorld::initPhysics()
 
 	worldBody->CreateFixture(&worldBox,0);
 	
+	_contactListener = new HelloWorld();
+	_world->SetContactListener(_contactListener);
  
 	//debugDrawの設定
 	_debugDraw = new GLESDebugDraw( PTM_RATIO );
