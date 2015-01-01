@@ -95,7 +95,8 @@ void HelloWorld::CreateBomb(CCPoint point)
 	BombBodyDef.type = b2_dynamicBody;
 	BombBodyDef.position.Set(point.x / PTM_RATIO, point.y / PTM_RATIO);
 
-	BombBodyDef.userData = (void*)TAG_BOMB;
+	//BombBodyDef.userData = (void*)TAG_BOMB;
+	BombBodyDef.userData = BombSprite;
 
 	b2Body* Bomb_body = _world->CreateBody(&BombBodyDef);
 	Bomb_body->SetLinearVelocity(b2Vec2(0.0, -10.0));
@@ -117,14 +118,14 @@ void HelloWorld::CreateBomb(CCPoint point)
 //Enemy作成
 void HelloWorld::CreateEnemy(float dt)
 {
-	PhysiSprite* Enemyprite = new PhysiSprite();
-	Enemyprite->autorelease();
-	Enemyprite->initWithFile("Player.png");
+	PhysiSprite* EnemySprite = new PhysiSprite();
+	EnemySprite->autorelease();
+	EnemySprite->initWithFile("Player.png");
 
 	
 	float posX = (float)(rand()%(95-10+1)+10) / 100 ;
 
-	this->addChild(Enemyprite);
+	this->addChild(EnemySprite);
 
 	b2BodyDef EnemyBodyDef;
 	EnemyBodyDef.type = b2_dynamicBody;
@@ -132,12 +133,13 @@ void HelloWorld::CreateEnemy(float dt)
 	EnemyBodyDef.userData = (void*)TAG_ENEMY;
 
 	enemyBody = _world->CreateBody(&EnemyBodyDef);
+	
 
 	enemyBody->SetLinearVelocity(b2Vec2(0.0, 10.0));
 	//enemyBody->ApplyForce(b2Vec2(0.0, enemyBody->GetMass() * -gravity.y), enemyBody->GetPosition());
 
 	b2CircleShape EnemyShape;
-	EnemyShape.m_radius = Enemyprite->getContentSize().width * 0.5 / PTM_RATIO;
+	EnemyShape.m_radius = EnemySprite->getContentSize().width * 0.5 / PTM_RATIO;
 
 	b2FixtureDef BombFixDef;
 	BombFixDef.shape = &EnemyShape;
@@ -145,7 +147,7 @@ void HelloWorld::CreateEnemy(float dt)
 	BombFixDef.friction = 0.9;
 
 	enemyBody->CreateFixture(&BombFixDef);
-	Enemyprite->setPhysiBody(enemyBody);
+	EnemySprite->setPhysiBody(enemyBody);
 
 	//this->setViewPointCenter(BombSprite->getPosition());
 
@@ -186,7 +188,7 @@ void HelloWorld::CreatePlayer(CCPoint point)
 void HelloWorld::BeginContact(b2Contact* contact)
 {
 	//接触したオブジェクトのuserdataを取得
-	PhysiSprite* SpriteA = (PhysiSprite*)contact->GetFixtureA()->GetUserData();
+	CCSprite* SpriteA = (CCSprite*)contact->GetFixtureA()->GetUserData();
 	PhysiSprite* SpriteB = (PhysiSprite*)contact->GetFixtureB()->GetUserData();
 
 	//接触したオブジェクトのbodyを取得
@@ -195,13 +197,13 @@ void HelloWorld::BeginContact(b2Contact* contact)
 
 	//A側の非表示処理
 	//SpriteA->setVisible(false);
-	SpriteA->removeFromParentAndCleanup(true);
+	//SpriteA->removeFromParentAndCleanup(true);
 	_world->DestroyBody(BodyA);
 
 	
 	//B側の非表示処理
 	//SpriteB->setVisible(false);
-	SpriteB->removeFromParentAndCleanup(true);
+	//SpriteB->removeFromParentAndCleanup(true);
 	_world->DestroyBody(BodyB);
 }
 
