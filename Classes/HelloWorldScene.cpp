@@ -87,6 +87,7 @@ void HelloWorld::CreateBomb(CCPoint point)
 {
 	PhysiSprite* BombSprite = new PhysiSprite();
 	BombSprite->autorelease();
+	BombSprite->setTag(TAG_BOMB);
 	BombSprite->initWithFile("Bomb.png");
 	BombSprite->setPosition(point);
 	this->addChild(BombSprite);
@@ -120,17 +121,16 @@ void HelloWorld::CreateEnemy(float dt)
 {
 	PhysiSprite* EnemySprite = new PhysiSprite();
 	EnemySprite->autorelease();
+	EnemySprite->setTag(TAG_ENEMY);
 	EnemySprite->initWithFile("Player.png");
-
-	
-	float posX = (float)(rand()%(95-10+1)+10) / 100 ;
-
+	EnemySprite->setPosition(ccp(0,0));
 	this->addChild(EnemySprite);
 
 	b2BodyDef EnemyBodyDef;
 	EnemyBodyDef.type = b2_dynamicBody;
+	float posX = (float)(rand()%(95-10+1)+10) / 100 ;
 	EnemyBodyDef.position.Set(ScreenSize.width * posX / PTM_RATIO, ScreenSize.height * 0.1f / PTM_RATIO);
-	EnemyBodyDef.userData = (void*)TAG_ENEMY;
+	EnemyBodyDef.userData = EnemySprite;
 
 	enemyBody = _world->CreateBody(&EnemyBodyDef);
 	
@@ -188,23 +188,49 @@ void HelloWorld::CreatePlayer(CCPoint point)
 void HelloWorld::BeginContact(b2Contact* contact)
 {
 	//接触したオブジェクトのuserdataを取得
-	CCSprite* SpriteA = (CCSprite*)contact->GetFixtureA()->GetUserData();
-	PhysiSprite* SpriteB = (PhysiSprite*)contact->GetFixtureB()->GetUserData();
+	PhysiSprite* SpriteA = (PhysiSprite*)contact->GetFixtureA()->GetBody()->GetUserData();
+	PhysiSprite* SpriteB = (PhysiSprite*)contact->GetFixtureB()->GetBody()->GetUserData();
+
+	//AとBのオブジェクトのタグを取得
+	int TagA = SpriteA->getTag();
+	int TagB = SpriteB->getTag();
 
 	//接触したオブジェクトのbodyを取得
 	b2Body* BodyA = contact->GetFixtureA()->GetBody();
 	b2Body* BodyB = contact->GetFixtureB()->GetBody();
 
+	//タグがEnemyの場合削除
+	if(TagA == TAG_ENEMY)
+	{
+		SpriteA->setVisible(false);
+		
+	}
+	else if(TagB == TAG_ENEMY)
+	{
+		SpriteB->setVisible(false);
+	}
+
+	//タグがBombの場合削除
+	if(TagA == TAG_BOMB)
+	{
+		SpriteA->setVisible(false);
+		
+	}
+	else if(TagB == TAG_BOMB)
+	{
+		SpriteB->setVisible(false);
+	}
+
 	//A側の非表示処理
 	//SpriteA->setVisible(false);
 	//SpriteA->removeFromParentAndCleanup(true);
-	_world->DestroyBody(BodyA);
+	//_world->DestroyBody(BodyA);
 
 	
 	//B側の非表示処理
 	//SpriteB->setVisible(false);
 	//SpriteB->removeFromParentAndCleanup(true);
-	_world->DestroyBody(BodyB);
+	//_world->DestroyBody(BodyB);
 }
 
 //物理初期化
