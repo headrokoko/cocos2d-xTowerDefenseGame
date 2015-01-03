@@ -23,5 +23,5 @@ void HudLayer::numCollectedChanged(int numCollected)
 {
     CCString *labelCollected = new CCString();
     labelCollected->initWithFormat("%d",numCollected);
-    _label->setString(labelCollected->getCString());
+    //_label->setString(labelCollected->getCString());
 }

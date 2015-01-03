@@ -85,18 +85,18 @@ void HelloWorld::CreateBackground()
 //Bomb作成
 void HelloWorld::CreateBomb(CCPoint point)
 {
-	PhysiSprite* BombSprite = new PhysiSprite();
+	PhysiSprite* BombSprite = new PhysiSprite();	//PhysiSpriteでBomb用のスプライトを作成
 	BombSprite->autorelease();
-	BombSprite->setTag(TAG_BOMB);
-	BombSprite->initWithFile("Bomb.png");
-	BombSprite->setPosition(point);
-	this->addChild(BombSprite);
+	BombSprite->setTag(TAG_BOMB);	//タグをTAG_BOMBに設定
+	BombSprite->initWithFile("Bomb.png");	//BombSpriteに使用するテクスチャを設定
+	BombSprite->setPosition(point);	//作成位置を設定
+	this->addChild(BombSprite);	//BombSpriteの表示
 
+	//Bombの物理特性の設定
 	b2BodyDef BombBodyDef;
-	BombBodyDef.type = b2_dynamicBody;
-	BombBodyDef.position.Set(point.x / PTM_RATIO, point.y / PTM_RATIO);
+	BombBodyDef.type = b2_dynamicBody;	//動的に使用するのでダイナミックボディに設定
+	BombBodyDef.position.Set(point.x / PTM_RATIO, point.y / PTM_RATIO);	//
 
-	//BombBodyDef.userData = (void*)TAG_BOMB;
 	BombBodyDef.userData = BombSprite;
 
 	b2Body* Bomb_body = _world->CreateBody(&BombBodyDef);
@@ -134,9 +134,7 @@ void HelloWorld::CreateEnemy(float dt)
 
 	enemyBody = _world->CreateBody(&EnemyBodyDef);
 	
-
 	enemyBody->SetLinearVelocity(b2Vec2(0.0, 10.0));
-	//enemyBody->ApplyForce(b2Vec2(0.0, enemyBody->GetMass() * -gravity.y), enemyBody->GetPosition());
 
 	b2CircleShape EnemyShape;
 	EnemyShape.m_radius = EnemySprite->getContentSize().width * 0.5 / PTM_RATIO;
@@ -187,50 +185,99 @@ void HelloWorld::CreatePlayer(CCPoint point)
 //接触時のメソッド
 void HelloWorld::BeginContact(b2Contact* contact)
 {
-	//接触したオブジェクトのuserdataを取得
-	PhysiSprite* SpriteA = (PhysiSprite*)contact->GetFixtureA()->GetBody()->GetUserData();
-	PhysiSprite* SpriteB = (PhysiSprite*)contact->GetFixtureB()->GetBody()->GetUserData();
+	b2Fixture* FixtuerA = contact->GetFixtureA();
+	b2Fixture* FixtuerB = contact->GetFixtureB();
 
-	//AとBのオブジェクトのタグを取得
-	int TagA = SpriteA->getTag();
-	int TagB = SpriteB->getTag();
-
-	//接触したオブジェクトのbodyを取得
-	b2Body* BodyA = contact->GetFixtureA()->GetBody();
-	b2Body* BodyB = contact->GetFixtureB()->GetBody();
-
-	//タグがEnemyの場合削除
-	if(TagA == TAG_ENEMY)
-	{
-		SpriteA->setVisible(false);
-		
-	}
-	else if(TagB == TAG_ENEMY)
-	{
-		SpriteB->setVisible(false);
-	}
-
-	//タグがBombの場合削除
-	if(TagA == TAG_BOMB)
-	{
-		SpriteA->setVisible(false);
-		
-	}
-	else if(TagB == TAG_BOMB)
-	{
-		SpriteB->setVisible(false);
-	}
-
-	//A側の非表示処理
-	//SpriteA->setVisible(false);
-	//SpriteA->removeFromParentAndCleanup(true);
-	//_world->DestroyBody(BodyA);
-
+	//FixtureのNullチェック
+	CCAssert(FixtuerA != NULL,"FixtureA is NULL");
+	CCAssert(FixtuerB != NULL,"FixtureB is NULL");
 	
-	//B側の非表示処理
-	//SpriteB->setVisible(false);
-	//SpriteB->removeFromParentAndCleanup(true);
-	//_world->DestroyBody(BodyB);
+	//接触したオブジェクトのbodyを取得
+	b2Body* BodyA = FixtuerA->GetBody();
+	b2Body* BodyB = FixtuerB->GetBody();
+	
+	//BodyのNullチェック
+	CCAssert(BodyA != NULL,"BodyAがNULL");
+	CCAssert(BodyB != NULL,"BodyBがNULL");
+
+	//Bodyのタイプを取得
+	int BodyTypeA = BodyA->GetType();
+	int BodyTypeB = BodyB->GetType();
+	
+	//接触した物体が両方とも動的なものの場合に実行
+	if((BodyTypeA == b2_dynamicBody)&&(BodyTypeB == b2_dynamicBody))
+	{
+		//接触したオブジェクトのuserdataを取得
+		PhysiSprite* SpriteA = (PhysiSprite*)BodyA->GetUserData();
+		PhysiSprite* SpriteB = (PhysiSprite*)BodyB->GetUserData();
+	
+		//AとBのオブジェクトのタグを取得
+		int TagA = SpriteA->getTag();
+		int TagB = SpriteB->getTag();
+
+		//タグがEnemyの場合削除
+		if(TagA == TAG_ENEMY)
+		{
+			InvisibleSprite(SpriteA);
+		}
+		if(TagB == TAG_ENEMY)
+		{
+			InvisibleSprite(SpriteB);
+		}
+
+		//タグがBombの場合削除
+		if(TagA == TAG_BOMB)
+		{
+			InvisibleSprite(SpriteA);
+		}
+		if(TagB == TAG_BOMB)
+		{
+			InvisibleSprite(SpriteB);
+		}
+	}
+
+	//片方が静的(画面端など)オブジェクトだった場合
+	else if(BodyTypeA == b2_dynamicBody)
+	{
+		//接触したオブジェクトのuserdataを取得
+		PhysiSprite* SpriteA = (PhysiSprite*)BodyA->GetUserData();
+	
+		//AとBのオブジェクトのタグを取得
+		int TagA = SpriteA->getTag();
+		
+		//タグがBombの場合削除
+		if(TagA == TAG_BOMB)
+		{
+			InvisibleSprite(SpriteA);
+		}
+	}
+
+	else if(BodyTypeB == b2_dynamicBody)
+	{
+		//接触したオブジェクトのuserdataを取得
+		PhysiSprite* SpriteB = (PhysiSprite*)BodyB->GetUserData();
+	
+		//AとBのオブジェクトのタグを取得
+		int TagB = SpriteB->getTag();
+		
+		//タグがBombの場合削除
+		if(TagB == TAG_BOMB)
+		{
+			InvisibleSprite(SpriteB);
+		}
+	}
+}
+
+//Sprite非表示メソッド
+void HelloWorld::InvisibleSprite(CCSprite* sprite)
+{
+	sprite->setVisible(false);
+}
+
+//Body削除メソッド
+void HelloWorld::DeleteBody(b2Body* body)
+{
+	_world->DestroyBody(body);
 }
 
 //物理初期化
@@ -267,6 +314,7 @@ void HelloWorld::initPhysics()
 
 	worldBody->CreateFixture(&worldBox,0);
 	
+	//衝突判定を設定
 	_contactListener = new HelloWorld();
 	_world->SetContactListener(_contactListener);
  
