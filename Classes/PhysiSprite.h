@@ -11,7 +11,6 @@ class PhysiSprite : public CCSprite
 
 protected:
 
-	b2Body* E_body;
 
 public:
 	PhysiSprite();
@@ -20,6 +19,8 @@ public:
 
 	virtual bool isDirty(void);
 	virtual CCAffineTransform nodeToParentTransform(void);
+
+	b2Body* E_body;
 
 private:
 

@@ -2,6 +2,7 @@
 #define __CONTACT_LISTENER_H__
 
 #include "cocos2d.h"
+#include "HelloWorldScene.h"
 #include <Box2D\Box2D.h>
 
 USING_NS_CC;
@@ -13,10 +14,13 @@ protected:
 	SEL_CallFunc Mselector;
 
 public:
-	ContactListener(CCObject* target, SEL_CallFunc selecter);
+	ContactListener(b2World* world);
+	virtual void InvisibleSprite(CCSprite* sprite);
+	virtual void DeleteBody(b2Body* body);
 	void BeginContact(b2Contact* contact);
 
 private:
+	b2World* thisWorld; 
 
 };
 

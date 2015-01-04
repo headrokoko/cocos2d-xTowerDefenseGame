@@ -5,6 +5,7 @@
 #include <Box2D\Box2D.h>
 #include "GLES-Render.h"
 #include "CreateOBJ.h"
+#include "ContactListener.h"
 #include "HudLayer.h"
 
 USING_NS_CC;
@@ -28,8 +29,6 @@ public:
 	virtual void CreatePlayer(CCPoint point);	//プレイヤー作成メソッド
 	virtual void CreateEnemy(float dt);	//Enemy作成メソッド
 	virtual void CreateBomb(CCPoint point);		//爆弾作成メソッド
-	virtual void InvisibleSprite(CCSprite* sprite);
-	virtual void DeleteBody(b2Body* body);
 	virtual void BeginContact(b2Contact* contact);	//衝突判定メソッド	
 	virtual void draw();	//debugDraw作成メソッド　
 
