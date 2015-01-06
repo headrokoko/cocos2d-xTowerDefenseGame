@@ -1,9 +1,11 @@
 #include "ContactListener.h"
 #include "Option.h"
 
-ContactListener::ContactListener(b2World* world)
+//ContactListenerのコンストラクタ
+ContactListener::ContactListener(b2World* world, HelloWorld* HW)
 {
-	thisWorld = world;
+	thisWorld = world;		//worldを設定
+	HeWorld = HW;			//レイヤーを設定？
 }
 
 void ContactListener::BeginContact(b2Contact* contact)
@@ -34,8 +36,6 @@ void ContactListener::BeginContact(b2Contact* contact)
 		//接触したオブジェクトのuserdataを取得
 		CCSprite* SpriteA = (CCSprite*)BodyA->GetUserData();
 		CCSprite* SpriteB = (CCSprite*)BodyB->GetUserData();
-
-
 	
 		//AとBのオブジェクトのタグを取得
 		int TagA = SpriteA->getTag();
@@ -44,11 +44,13 @@ void ContactListener::BeginContact(b2Contact* contact)
 		//タグがEnemyの場合削除
 		if(TagA == TAG_ENEMY)
 		{
-			InvisibleSprite(SpriteA);
+			InvisibleSprite(SpriteA);	//SpritAを非表示
+			HeWorld->AddScore(10);		//scoreに10加算
 		}
 		if(TagB == TAG_ENEMY)
 		{
-			InvisibleSprite(SpriteB);
+			InvisibleSprite(SpriteB);	//SpritAを非表示
+			HeWorld->AddScore(10);		//scoreに10加算
 		}
 
 		//タグがBombの場合削除

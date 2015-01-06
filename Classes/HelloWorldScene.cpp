@@ -6,6 +6,9 @@
 
 USING_NS_CC;
 
+HelloWorld::HelloWorld(){
+}
+
 CCScene* HelloWorld::scene()
 {
     // 'scene' is an autorelease object
@@ -55,13 +58,22 @@ bool HelloWorld::init()
 	//CreateBomb(spawnpoint);
 
 	//スコア用ラベルの表示
-	ScoreLabel =  CCLabelTTF::create("test","arial",45);
-	ScoreLabel->setPosition(ccp(ScreenSize.width * 0.5f, ScreenSize.height * 0.9f ));
+	ScoreLabel =  CCLabelTTF::create("Score: 0","arial",30);
+	ScoreLabel->setPosition(ccp(ScreenSize.width * 0.2f, ScreenSize.height * 0.97f ));
 	this->addChild(ScoreLabel);
 	score = 0;
 
+	//経過時間用ラベル
+	time = 0;
+	TimeLabel = CCLabelTTF::create("Time: 0", "arial", 30);
+	TimeLabel->setPosition(ccp(ScreenSize.width * 0.8f, ScreenSize.height * 0.97f));
+	this->addChild(TimeLabel);
+
 	this->setTouchEnabled(true);
 	this->schedule(schedule_selector(HelloWorld::CreateEnemy), 1.5f); 
+
+	//時間表示を1秒ごとに更新
+	this->schedule(schedule_selector(HelloWorld::ElapsedTime),1.0f);
 
 	scheduleUpdate();	//updateメソッドを実行
     
@@ -73,6 +85,20 @@ void HelloWorld::update(float dt)
 	_world->Step(dt,10,10);
 }
 
+//経過時間更新メソッド
+void HelloWorld::ElapsedTime(float dt)
+{
+	time++;
+	CCString* message = CCString::createWithFormat("Time: %i",time);
+	TimeLabel->setString(message->getCString());
+}
+
+void HelloWorld::AddScore(int point)
+{
+	score += point;
+	CCString* message = CCString::createWithFormat("Score: %i",score);
+	ScoreLabel->setString(message->getCString());
+}
 
 //背景設定メソッド
 void HelloWorld::CreateBackground()
@@ -189,10 +215,7 @@ void HelloWorld::CreatePlayer(CCPoint point)
 
 }
 
-//接触時のメソッド
-void HelloWorld::BeginContact(b2Contact* contact)
-{
-}
+
 
 
 //物理初期化
@@ -236,7 +259,7 @@ void HelloWorld::initPhysics()
 	worldBody->CreateFixture(&worldBox,0);
 	
 	//衝突判定を設定
-	_contactListener = new ContactListener(_world);
+	_contactListener = new ContactListener(_world, this);
 	_world->SetContactListener(_contactListener);
  
 	//debugDrawの設定
@@ -281,16 +304,14 @@ bool HelloWorld::ccTouchBegan(CCTouch *touch, CCEvent *event)
 {
 	CCDirector* pDirector = CCDirector::sharedDirector();
 	CCPoint touchPoint = pDirector->convertToGL(touch->getLocationInView());
+	
 
-	//CreatePlayer(touchPoint);
+	//Bombを生成できるタッチエリアを限定
 
-	//ラベル更新テスト用の仮処理(クリックした回数を表示)
-	score++;
-	CCString* message = CCString::createWithFormat("%i",score);
-	ScoreLabel->setString(message->getCString());
-
-	CreateBomb(touchPoint);
-
+	if((touchPoint.x > (0.1f / PTM_RATIO)))
+	{
+			CreateBomb(touchPoint);
+	}
 
     return true;
 }

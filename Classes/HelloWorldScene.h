@@ -7,6 +7,7 @@
 #include "CreateOBJ.h"
 #include "ContactListener.h"
 #include "HudLayer.h"
+#include "picojson.h"
 
 USING_NS_CC;
 
@@ -20,6 +21,7 @@ protected:
 
 public:
 	
+	HelloWorld();
 	~HelloWorld();
 
     // Method 'init' in cocos2d-x returns bool, instead of 'id' in cocos2d-iphone (an object pointer)
@@ -29,8 +31,9 @@ public:
 	virtual void CreatePlayer(CCPoint point);	//プレイヤー作成メソッド
 	virtual void CreateEnemy(float dt);	//Enemy作成メソッド
 	virtual void CreateBomb(CCPoint point);		//爆弾作成メソッド
-	virtual void BeginContact(b2Contact* contact);	//衝突判定メソッド	
 	virtual void draw();	//debugDraw作成メソッド　
+	virtual void ElapsedTime(float dt);	//経過時間表示メソッド
+	virtual void AddScore(int point);	//スコア加算メソッド
 
 
 	void initPhysics(); //物理演算初期化
@@ -68,7 +71,9 @@ public:
 	b2Body* TurretBody;
 	b2Body* wallBody;
 	CCLabelTTF* ScoreLabel;
+	CCLabelTTF* TimeLabel;
 	int score;
+	int time;
 
     // preprocessor macro for "static create()" constructor ( node() deprecated )
     CREATE_FUNC(HelloWorld);

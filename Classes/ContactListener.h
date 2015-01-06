@@ -14,13 +14,15 @@ protected:
 	SEL_CallFunc Mselector;
 
 public:
-	ContactListener(b2World* world);
+	ContactListener(b2World* world, HelloWorld* HW);
 	virtual void InvisibleSprite(CCSprite* sprite);
 	virtual void DeleteBody(b2Body* body);
-	void BeginContact(b2Contact* contact);
+	virtual void BeginContact(b2Contact* contact);
+	
+	b2World* thisWorld; 
+	HelloWorld* HeWorld;
 
 private:
-	b2World* thisWorld; 
 
 };
 
