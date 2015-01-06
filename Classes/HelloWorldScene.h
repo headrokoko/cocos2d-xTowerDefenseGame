@@ -67,6 +67,8 @@ public:
 	b2Body* enemyBody;
 	b2Body* TurretBody;
 	b2Body* wallBody;
+	CCLabelTTF* ScoreLabel;
+	int score;
 
     // preprocessor macro for "static create()" constructor ( node() deprecated )
     CREATE_FUNC(HelloWorld);

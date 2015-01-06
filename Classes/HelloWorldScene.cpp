@@ -2,6 +2,7 @@
 #include "SimpleAudioEngine.h"
 #include "Option.h"
 #include "PhysiSprite.h"
+#include <stdio.h>
 
 USING_NS_CC;
 
@@ -52,6 +53,12 @@ bool HelloWorld::init()
     }
 	//CreatePlayer(ccp(x,y));
 	//CreateBomb(spawnpoint);
+
+	//スコア用ラベルの表示
+	ScoreLabel =  CCLabelTTF::create("test","arial",45);
+	ScoreLabel->setPosition(ccp(ScreenSize.width * 0.5f, ScreenSize.height * 0.9f ));
+	this->addChild(ScoreLabel);
+	score = 0;
 
 	this->setTouchEnabled(true);
 	this->schedule(schedule_selector(HelloWorld::CreateEnemy), 1.5f); 
@@ -276,6 +283,11 @@ bool HelloWorld::ccTouchBegan(CCTouch *touch, CCEvent *event)
 	CCPoint touchPoint = pDirector->convertToGL(touch->getLocationInView());
 
 	//CreatePlayer(touchPoint);
+
+	//ラベル更新テスト用の仮処理(クリックした回数を表示)
+	score++;
+	CCString* message = CCString::createWithFormat("%i",score);
+	ScoreLabel->setString(message->getCString());
 
 	CreateBomb(touchPoint);
 
