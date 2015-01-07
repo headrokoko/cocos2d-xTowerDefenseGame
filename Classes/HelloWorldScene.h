@@ -35,6 +35,9 @@ public:
 	virtual void ElapsedTime(float dt);	//経過時間表示メソッド
 	virtual void AddScore(int point);	//スコア加算メソッド
 
+	virtual void severMessageLabel();
+
+	virtual void RemoveOBJ(b2Body* body);
 
 	void initPhysics(); //物理演算初期化
 
@@ -72,6 +75,8 @@ public:
 	b2Body* wallBody;
 	CCLabelTTF* ScoreLabel;
 	CCLabelTTF* TimeLabel;
+	CCLabelTTF* touchPosX;
+	CCLabelTTF* touchPosY;
 	int score;
 	int time;
 
@@ -79,6 +84,9 @@ public:
     CREATE_FUNC(HelloWorld);
 
 private:
+
+	void TouchPosLabel();
+	void TouchPosLabelRenewal(CCPoint point);
 
 	CCPoint spawnpoint;
 	CCSpriteBatchNode* batchNode;

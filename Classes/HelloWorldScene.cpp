@@ -76,6 +76,8 @@ bool HelloWorld::init()
 	this->schedule(schedule_selector(HelloWorld::ElapsedTime),1.0f);
 
 	scheduleUpdate();	//updateメソッドを実行
+	TouchPosLabel();
+	severMessageLabel();
     
     return true;
 }
@@ -91,6 +93,40 @@ void HelloWorld::ElapsedTime(float dt)
 	time++;
 	CCString* message = CCString::createWithFormat("Time: %i",time);
 	TimeLabel->setString(message->getCString());
+}
+
+//タッチ位置表示メソッド
+void HelloWorld::TouchPosLabel(){
+	
+	//タッチ位置（X）表示
+	touchPosX = CCLabelTTF::create("TouchPosX: ", "arial", 20);
+	touchPosX->setPosition(ccp(ScreenSize.width * 0.2f, ScreenSize.height * 0.8f));
+	this->addChild(touchPosX);
+
+	//タッチ位置（Y）表示
+	touchPosY = CCLabelTTF::create("TouchPosY: ", "arial", 20);
+	touchPosY->setPosition(ccp(ScreenSize.width * 0.2f, ScreenSize.height * 0.7f));
+	this->addChild(touchPosY);
+}
+
+//タッチ位置数値更新メソッド
+void HelloWorld::TouchPosLabelRenewal(CCPoint point)
+{
+	
+	CCString* touchX = CCString::createWithFormat("TouchX: %f",point.x / PTM_RATIO);
+	touchPosX->setString(touchX->getCString());
+	
+	CCString* touchY = CCString::createWithFormat("TouchX: %f",point.y / PTM_RATIO);
+	touchPosY->setString(touchY->getCString());
+	
+}
+
+//サーバーから受信したメッセージを表示
+void HelloWorld::severMessageLabel()
+{
+	CCLabelTTF* severMessage = CCLabelTTF::create("SeverMessage: ", "arial", 20);
+	severMessage->setPosition(ccp(ScreenSize.width * 0.2f, ScreenSize.height * 0.6f));
+	this->addChild(severMessage);
 }
 
 void HelloWorld::AddScore(int point)
@@ -215,8 +251,11 @@ void HelloWorld::CreatePlayer(CCPoint point)
 
 }
 
-
-
+//b2Body削除メソッド
+void HelloWorld::RemoveOBJ(b2Body* body)
+{
+	_world->DestroyBody(body);
+}
 
 //物理初期化
 void HelloWorld::initPhysics()
@@ -305,10 +344,15 @@ bool HelloWorld::ccTouchBegan(CCTouch *touch, CCEvent *event)
 	CCDirector* pDirector = CCDirector::sharedDirector();
 	CCPoint touchPoint = pDirector->convertToGL(touch->getLocationInView());
 	
+	TouchPosLabelRenewal(touchPoint);
 
 	//Bombを生成できるタッチエリアを限定
-
-	if((touchPoint.x > (0.1f / PTM_RATIO)))
+	float MaxX = 14.0f;
+	float MinX = 1.0f;
+	float MaxY = 29.0f;
+	float MinY = 25.0f;
+	if((((touchPoint.x / PTM_RATIO) > 1.0f) && ((touchPoint.x / PTM_RATIO) < 14.0f))&&
+		((touchPoint.y / PTM_RATIO) > MinY) && (touchPoint.y / PTM_RATIO) < MaxY)
 	{
 			CreateBomb(touchPoint);
 	}

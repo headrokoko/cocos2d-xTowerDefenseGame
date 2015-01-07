@@ -46,6 +46,8 @@ void ContactListener::BeginContact(b2Contact* contact)
 		{
 			InvisibleSprite(SpriteA);	//SpritA‚ð”ñ•\Ž¦
 			HeWorld->AddScore(10);		//score‚É10‰ÁŽZ
+			//HeWorld->RemoveOBJ(BodyA);
+
 		}
 		if(TagB == TAG_ENEMY)
 		{
