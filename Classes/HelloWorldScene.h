@@ -3,6 +3,8 @@
 
 #include "cocos2d.h"
 #include <Box2D\Box2D.h>
+#include "HttpRequest.h"
+#include "HttpClient.h"
 #include "GLES-Render.h"
 #include "CreateOBJ.h"
 #include "ContactListener.h"
@@ -34,6 +36,8 @@ public:
 	virtual void draw();	//debugDraw作成メソッド　
 	virtual void ElapsedTime(float dt);	//経過時間表示メソッド
 	virtual void AddScore(int point);	//スコア加算メソッド
+	virtual void JsonInit(string PlayerName, int ScorePoint);		//Jsonの読み込み
+
 
 	virtual void severMessageLabel();
 
@@ -109,6 +113,7 @@ private:
     int _numCollected;
 	int count;
     
+	bool TouchLabelbool;
 
 };
 

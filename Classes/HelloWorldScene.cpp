@@ -76,7 +76,13 @@ bool HelloWorld::init()
 	this->schedule(schedule_selector(HelloWorld::ElapsedTime),1.0f);
 
 	scheduleUpdate();	//updateメソッドを実行
-	TouchPosLabel();
+	
+	//クリック位置を表示させるかどうかの是非(true = 表示/false = 非表示)
+	TouchLabelbool = true;
+	if(TouchLabelbool){
+		TouchPosLabel();
+	}
+	
 	severMessageLabel();
     
     return true;
@@ -107,6 +113,8 @@ void HelloWorld::TouchPosLabel(){
 	touchPosY = CCLabelTTF::create("TouchPosY: ", "arial", 20);
 	touchPosY->setPosition(ccp(ScreenSize.width * 0.2f, ScreenSize.height * 0.7f));
 	this->addChild(touchPosY);
+
+	TouchLabelbool = true;
 }
 
 //タッチ位置数値更新メソッド
@@ -341,11 +349,13 @@ void HelloWorld::registerWithTouchDispatcher()
 //クリック押下イベント
 bool HelloWorld::ccTouchBegan(CCTouch *touch, CCEvent *event)
 {
+
 	CCDirector* pDirector = CCDirector::sharedDirector();
 	CCPoint touchPoint = pDirector->convertToGL(touch->getLocationInView());
 	
-	TouchPosLabelRenewal(touchPoint);
-
+	if(TouchLabelbool){
+		TouchPosLabelRenewal(touchPoint);
+	}
 	//Bombを生成できるタッチエリアを限定
 	float MaxX = 14.0f;
 	float MinX = 1.0f;
@@ -358,6 +368,26 @@ bool HelloWorld::ccTouchBegan(CCTouch *touch, CCEvent *event)
 	}
 
     return true;
+}
+
+void HelloWorld::JsonInit(string PlayerName, int ScorePoint)
+{
+	const char* json = "{\"Name\":{\"PlayerName\":\"Test\"}}";
+	picojson::value v;
+	std::string err;
+	picojson::parse(v, json, json + strlen(json), &err);
+	if(err.empty())
+	{
+		picojson::object& o = v.get<picojson::object>();
+
+		//P1の名前の取得
+		string P1name = o["Name"].get<std::string>();
+
+		//P1のスコアの取得
+		//int P1score = o["Score"].get<int>();
+
+
+	}
 }
 
 void HelloWorld::setPlayerPosition(CCPoint position)
