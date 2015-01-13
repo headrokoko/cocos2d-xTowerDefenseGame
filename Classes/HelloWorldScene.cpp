@@ -128,11 +128,19 @@ void HelloWorld::TouchPosLabelRenewal(CCPoint point)
 	
 }
 
+//JSON要求メソッドの予定
+void HelloWorld::onHttpRequestCompleted(CCHttpClient sender, CCHttpResponse response)
+{
+}
+
 //サーバーから受信したメッセージを表示
 void HelloWorld::severMessageLabel()
 {
 	request = new CCHttpRequest();
-	request->setUrl("http://localhost:8080/helo");
+	request->setUrl("http://localhost:8080/helo");	//リクエストを行うURL
+	request->setRequestType(CCHttpRequest::kHttpGet);
+	request->setResponseCallback(this,
+		callfuncND_selector(HelloWorld::onHttpRequestCompleted));
 
 	CCLabelTTF* severMessage = CCLabelTTF::create("SeverMessage: ", "arial", 20);
 	severMessage->setPosition(ccp(ScreenSize.width * 0.2f, ScreenSize.height * 0.6f));
