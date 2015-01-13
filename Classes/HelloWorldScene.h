@@ -1,17 +1,19 @@
 #ifndef __HELLOWORLD_SCENE_H__
 #define __HELLOWORLD_SCENE_H__
 
+#include "network/HttpClient.h"
+#include "network/HttpRequest.h"
+#include "network/HttpResponse.h"
 #include "cocos2d.h"
+#include "cocos-ext.h"
 #include <Box2D\Box2D.h>
-#include "HttpRequest.h"
-#include "HttpClient.h"
 #include "GLES-Render.h"
 #include "CreateOBJ.h"
 #include "ContactListener.h"
 #include "HudLayer.h"
-#include "picojson.h"
 
 USING_NS_CC;
+USING_NS_CC_EXT;
 
 #define PTM_RATIO 32.0
 
@@ -19,7 +21,6 @@ class HelloWorld : public cocos2d::CCLayer, public b2ContactListener
 {
 
 protected:
-	
 
 public:
 	
@@ -81,6 +82,8 @@ public:
 	CCLabelTTF* TimeLabel;
 	CCLabelTTF* touchPosX;
 	CCLabelTTF* touchPosY;
+	
+	CCHttpRequest* request;
 	int score;
 	int time;
 

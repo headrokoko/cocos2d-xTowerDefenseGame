@@ -2,9 +2,9 @@
 #include "SimpleAudioEngine.h"
 #include "Option.h"
 #include "PhysiSprite.h"
+#include "picojson.h"
 #include <stdio.h>
 
-USING_NS_CC;
 
 HelloWorld::HelloWorld(){
 }
@@ -120,7 +120,6 @@ void HelloWorld::TouchPosLabel(){
 //タッチ位置数値更新メソッド
 void HelloWorld::TouchPosLabelRenewal(CCPoint point)
 {
-	
 	CCString* touchX = CCString::createWithFormat("TouchX: %f",point.x / PTM_RATIO);
 	touchPosX->setString(touchX->getCString());
 	
@@ -132,6 +131,9 @@ void HelloWorld::TouchPosLabelRenewal(CCPoint point)
 //サーバーから受信したメッセージを表示
 void HelloWorld::severMessageLabel()
 {
+	request = new CCHttpRequest();
+	request->setUrl("http://localhost:8080/helo");
+
 	CCLabelTTF* severMessage = CCLabelTTF::create("SeverMessage: ", "arial", 20);
 	severMessage->setPosition(ccp(ScreenSize.width * 0.2f, ScreenSize.height * 0.6f));
 	this->addChild(severMessage);
