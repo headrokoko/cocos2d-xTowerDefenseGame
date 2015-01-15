@@ -1,12 +1,16 @@
 #include "HelloWorldScene.h"
+#include "network/HttpClient.h"
 #include "SimpleAudioEngine.h"
 #include "Option.h"
 #include "PhysiSprite.h"
 #include "picojson.h"
 #include <stdio.h>
 
+USING_NS_CC;
+USING_NS_CC_EXT;
 
-HelloWorld::HelloWorld(){
+HelloWorld::HelloWorld()
+{
 }
 
 CCScene* HelloWorld::scene()
@@ -129,7 +133,18 @@ void HelloWorld::TouchPosLabelRenewal(CCPoint point)
 }
 
 //JSON要求メソッドの予定
-void HelloWorld::onHttpRequestCompleted(CCHttpClient sender, CCHttpResponse response)
+//void HelloWorld::onHttpRequestCompleted(CCHttpClient sender, CCHttpResponse response)
+
+//JSONデータをサーバー側に送信する予定のメソッド
+void HelloWorld::HttpPostDate(string Pname, int score)
+{
+	CCDictionary* postdate = CCDictionary::create();
+	postdate->setObject(CCString::create(Pname),"name");		//PlayerNameをセット
+	postdate->setObject(CCInteger::create(score),"score");		//Scoreをセット
+}
+
+//受信したJSONデータを整理するメソッド
+void HelloWorld::SortDate()
 {
 }
 
@@ -139,8 +154,6 @@ void HelloWorld::severMessageLabel()
 	request = new CCHttpRequest();
 	request->setUrl("http://localhost:8080/helo");	//リクエストを行うURL
 	request->setRequestType(CCHttpRequest::kHttpGet);
-	request->setResponseCallback(this,
-		callfuncND_selector(HelloWorld::onHttpRequestCompleted));
 
 	CCLabelTTF* severMessage = CCLabelTTF::create("SeverMessage: ", "arial", 20);
 	severMessage->setPosition(ccp(ScreenSize.width * 0.2f, ScreenSize.height * 0.6f));
@@ -281,6 +294,10 @@ void HelloWorld::initPhysics()
 	//ワールドの物理設定
 	gravity = b2Vec2(0.0f, 0.0f);	//＿worldの重力を設定
 	_world = new b2World(gravity);	//_worldにgravityを入力
+	
+	//衝突判定を設定
+	_contactListener = new ContactListener(_world, this);
+	_world->SetContactListener(_contactListener);
 
 	//ゲーム画面端の設定
 	ScreenSize = CCDirector::sharedDirector()->getWinSize();
@@ -315,9 +332,6 @@ void HelloWorld::initPhysics()
 
 	worldBody->CreateFixture(&worldBox,0);
 	
-	//衝突判定を設定
-	_contactListener = new ContactListener(_world, this);
-	_world->SetContactListener(_contactListener);
  
 	//debugDrawの設定
 	_debugDraw = new GLESDebugDraw( PTM_RATIO );
@@ -380,25 +394,7 @@ bool HelloWorld::ccTouchBegan(CCTouch *touch, CCEvent *event)
     return true;
 }
 
-void HelloWorld::JsonInit(string PlayerName, int ScorePoint)
-{
-	const char* json = "{\"Name\":{\"PlayerName\":\"Test\"}}";
-	picojson::value v;
-	std::string err;
-	picojson::parse(v, json, json + strlen(json), &err);
-	if(err.empty())
-	{
-		picojson::object& o = v.get<picojson::object>();
 
-		//P1の名前の取得
-		string P1name = o["Name"].get<std::string>();
-
-		//P1のスコアの取得
-		//int P1score = o["Score"].get<int>();
-
-
-	}
-}
 
 void HelloWorld::setPlayerPosition(CCPoint position)
 {

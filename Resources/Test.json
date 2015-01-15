@@ -1,0 +1,23 @@
+{
+"1": {
+"id": 1,
+"name": "skelton",
+"hp": 10,
+"attack": 2,
+"def": 1
+},
+"2": {
+"id": 2,
+"name": "tori",
+"hp": 20,
+"attack": 5,
+"def": 3
+},
+"3": {
+"id": 3,
+"name": "miira",
+"hp": 30,
+"attack": 10,
+"def": 5
+}
+} 

@@ -16,7 +16,7 @@ protected:
 public:
 	ContactListener(b2World* world, HelloWorld* HW);
 	virtual void InvisibleSprite(CCSprite* sprite);
-	virtual void DeleteBody(b2Body* body);
+	virtual void DeleteBody(b2Body* body, b2World* world);
 	virtual void BeginContact(b2Contact* contact);
 	
 	b2World* thisWorld; 

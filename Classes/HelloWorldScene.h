@@ -37,8 +37,9 @@ public:
 	virtual void draw();	//debugDraw作成メソッド　
 	virtual void ElapsedTime(float dt);	//経過時間表示メソッド
 	virtual void AddScore(int point);	//スコア加算メソッド
-	virtual void onHttpRequestCompleted(CCHttpClient sender,CCHttpResponse reponse);
-	virtual void JsonInit(string PlayerName, int ScorePoint);		//Jsonの読み込み
+	virtual void HttpPostDate(string Pname, int score);		//サーバー側への送信メソッド
+	virtual void SortDate();		//サーバーから受信したデータを整理するメソッド
+	//virtual void onHttpRequestCompleted(CCHttpClient sender, CCHttpResponse reponse);
 
 
 	virtual void severMessageLabel();

@@ -14,6 +14,10 @@ void ContactListener::BeginContact(b2Contact* contact)
 	b2Fixture* FixtuerA = contact->GetFixtureA();
 	b2Fixture* FixtuerB = contact->GetFixtureB();
 
+	
+	b2Vec2 gravity = b2Vec2(0.0f, 0.0f);	//＿worldの重力を設定
+	b2World* testworld = new b2World(gravity); 
+
 	//FixtureのNullチェック
 	CCAssert(FixtuerA != NULL,"FixtureA is NULL");
 	CCAssert(FixtuerB != NULL,"FixtureB is NULL");
@@ -46,7 +50,7 @@ void ContactListener::BeginContact(b2Contact* contact)
 		{
 			InvisibleSprite(SpriteA);	//SpritAを非表示
 			HeWorld->AddScore(10);		//scoreに10加算
-			//DeleteBody(BodyA);
+			DeleteBody(BodyA, thisWorld);
 
 		}
 		if(TagB == TAG_ENEMY)
@@ -105,7 +109,7 @@ void ContactListener::InvisibleSprite(CCSprite* sprite)
 }
 
 //Body削除メソッド
-void ContactListener::DeleteBody(b2Body* body)
+void ContactListener::DeleteBody(b2Body* body, b2World* world)
 {
-	thisWorld->DestroyBody(body);
+	world->DestroyBody(body);
 }
