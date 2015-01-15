@@ -1,5 +1,6 @@
 #include "ContactListener.h"
 #include "Option.h"
+ 
 
 //ContactListenerのコンストラクタ
 ContactListener::ContactListener(b2World* world, HelloWorld* HW)
@@ -48,7 +49,7 @@ void ContactListener::BeginContact(b2Contact* contact)
 		//タグがEnemyの場合削除
 		if(TagA == TAG_ENEMY)
 		{
-			InvisibleSprite(SpriteA);	//SpritAを非表示
+			//InvisibleSprite(SpriteA);	//SpritAを非表示
 			HeWorld->AddScore(10);		//scoreに10加算
 			DeleteBody(BodyA, thisWorld);
 
@@ -57,16 +58,19 @@ void ContactListener::BeginContact(b2Contact* contact)
 		{
 			InvisibleSprite(SpriteB);	//SpritAを非表示
 			HeWorld->AddScore(10);		//scoreに10加算
+			DeleteBody(BodyB, thisWorld);
 		}
 
 		//タグがBombの場合削除
 		if(TagA == TAG_BOMB)
 		{
 			InvisibleSprite(SpriteA);
+			DeleteBody(BodyA, thisWorld);
 		}
 		if(TagB == TAG_BOMB)
 		{
 			InvisibleSprite(SpriteB);
+			DeleteBody(BodyB, thisWorld);
 		}
 	}
 

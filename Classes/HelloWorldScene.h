@@ -17,7 +17,7 @@ USING_NS_CC_EXT;
 
 #define PTM_RATIO 32.0
 
-class HelloWorld : public cocos2d::CCLayer, public b2ContactListener
+class HelloWorld : public cocos2d::CCLayer
 {
 
 protected:
@@ -119,6 +119,7 @@ private:
 	int count;
     
 	bool TouchLabelbool;
+
 
 };
 

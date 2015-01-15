@@ -26,4 +26,4 @@ private:
 
 };
 
-#endif // __CONTACT_LISTENER_H__
+#endif /* defined(__CONTACT_LISTENER_H__) */

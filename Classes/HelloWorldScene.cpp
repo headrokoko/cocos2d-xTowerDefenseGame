@@ -95,6 +95,7 @@ bool HelloWorld::init()
 void HelloWorld::update(float dt)
 {
 	_world->Step(dt,10,10);
+
 }
 
 //経過時間更新メソッド
@@ -129,7 +130,6 @@ void HelloWorld::TouchPosLabelRenewal(CCPoint point)
 	
 	CCString* touchY = CCString::createWithFormat("TouchX: %f",point.y / PTM_RATIO);
 	touchPosY->setString(touchY->getCString());
-	
 }
 
 //JSON要求メソッドの予定
@@ -146,6 +146,7 @@ void HelloWorld::HttpPostDate(string Pname, int score)
 //受信したJSONデータを整理するメソッド
 void HelloWorld::SortDate()
 {
+
 }
 
 //サーバーから受信したメッセージを表示
@@ -375,16 +376,16 @@ bool HelloWorld::ccTouchBegan(CCTouch *touch, CCEvent *event)
 {
 
 	CCDirector* pDirector = CCDirector::sharedDirector();
-	CCPoint touchPoint = pDirector->convertToGL(touch->getLocationInView());
+	CCPoint touchPoint = pDirector->convertToGL(touch->getLocationInView());		//タッチされた箇所を画面位置に補正
 	
 	if(TouchLabelbool){
 		TouchPosLabelRenewal(touchPoint);
 	}
 	//Bombを生成できるタッチエリアを限定
-	float MaxX = 14.0f;
-	float MinX = 1.0f;
-	float MaxY = 29.0f;
-	float MinY = 25.0f;
+	float MaxX = 14.0f;	//右現タッチ位置限界
+	float MinX = 1.0f;		//左限タッチ位置限界
+	float MaxY = 29.0f;	//上限タッチ位置限界
+	float MinY = 25.0f;	//下限タッチ位置限界
 	if((((touchPoint.x / PTM_RATIO) > 1.0f) && ((touchPoint.x / PTM_RATIO) < 14.0f))&&
 		((touchPoint.y / PTM_RATIO) > MinY) && (touchPoint.y / PTM_RATIO) < MaxY)
 	{
@@ -393,8 +394,6 @@ bool HelloWorld::ccTouchBegan(CCTouch *touch, CCEvent *event)
 
     return true;
 }
-
-
 
 void HelloWorld::setPlayerPosition(CCPoint position)
 {
